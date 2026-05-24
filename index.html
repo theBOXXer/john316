@@ -19,18 +19,18 @@
   body{
     background:#1a1118; font-family:'Cormorant Garamond', serif;
     display:flex; align-items:center; justify-content:center;
-    min-height:100vh; padding:24px; overflow:hidden;
+    min-height:100vh; overflow:hidden;
   }
 
-  /* ---------- the portrait page ---------- */
+  /* ---------- the portrait page (fills the whole viewport) ---------- */
   .page{
-    position:relative; width:min(440px,100%); aspect-ratio:9/16;
-    max-height:calc(100vh - 48px); border-radius:14px; overflow:hidden;
+    position:relative; width:100vw;
+    height:100vh; height:100dvh;
+    overflow:hidden;
     background:linear-gradient(to bottom,
       var(--light-1) 0%, var(--light-2) 12%, var(--gold) 26%,
       var(--dusk-1) 44%, var(--dusk-2) 60%, var(--earth-1) 76%,
       var(--earth-2) 90%, var(--earth-3) 100%);
-    box-shadow:0 40px 90px -30px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.05);
     display:flex; flex-direction:column; align-items:center; isolation:isolate;
   }
   .page::before{
@@ -519,16 +519,10 @@
   .scene2.show .verse3{ animation:rise 1.1s ease-out 3.1s both; }
   .scene2.show .ref3  { animation:rise 1.1s ease-out 3.5s both; }
   .scene2.show .scene2-actions{ animation:rise 1s ease-out 3.9s both; }
-  /* on phones: fill the whole screen, no letterbox gaps top/bottom */
+  /* phones: tighter top/bottom margins so HEAVEN/EARTH sit near the edges */
   @media (max-width: 600px){
-    body{ padding:0; }
-    .page{
-      width:100%;
-      aspect-ratio:auto;
-      height:100vh; height:100dvh;
-      max-height:none;
-      border-radius:0;
-    }
+    .heaven{ margin-top:4%; }
+    .earth{ margin-bottom:4%; }
   }
 </style>
 </head>
