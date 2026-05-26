@@ -64,6 +64,21 @@
   #climaxGlow.on{ opacity:1; animation:breathe 6s ease-in-out infinite; }
   @keyframes breathe{ 0%,100%{ transform:translate(-50%,-50%) scale(1); opacity:.85 } 50%{ transform:translate(-50%,-50%) scale(1.06); opacity:1 } }
 
+  /* the cross's power explodes — a burst of glory that heals the wound */
+  #gloryBurst{
+    position:absolute; left:50%; top:34%;
+    width:70vmin; height:70vmin; transform:translate(-50%,-50%) scale(.1);
+    background:radial-gradient(circle, rgba(255,250,235,.95), rgba(255,234,185,.55) 28%, rgba(241,200,120,.22) 48%, transparent 70%);
+    border-radius:50%; opacity:0; pointer-events:none; mix-blend-mode:screen; z-index:5;
+  }
+  #gloryBurst.boom{ animation:glory-boom 1.7s cubic-bezier(.18,.7,.3,1) forwards; }
+  @keyframes glory-boom{
+    0%{ transform:translate(-50%,-50%) scale(.1); opacity:0 }
+    12%{ opacity:1 }
+    55%{ transform:translate(-50%,-50%) scale(1.5); opacity:.75 }
+    100%{ transform:translate(-50%,-50%) scale(2.4); opacity:0 }
+  }
+
   #motes{ position:absolute; inset:0; pointer-events:none; }
   .mote{
     position:absolute; bottom:-12px; width:3px; height:3px; border-radius:50%;
@@ -101,6 +116,14 @@
   .arrowfill{ fill:var(--line); }
   .lifeglow{ filter:drop-shadow(0 0 10px rgba(241,200,120,.7)); }
 
+  /* GOD & MAN sit centred (with SIN) until step 6, then glide left to open room */
+  .mover{ transition:transform .8s var(--ease); }
+  .mover.fade{ transition:transform .8s var(--ease), opacity .9s var(--ease); }
+  #diagram:not(.phase2) .mover{ transform:translateX(360px); }
+  #diagram.phase2 .mover{ transform:translateX(0); }
+  /* SIN stays centred throughout */
+  #sinWrap{ transform:translateX(360px); }
+
   /* entrance states */
   .fade{ opacity:0; transition:opacity .9s var(--ease); }
   .fade.show{ opacity:1; }
@@ -110,15 +133,78 @@
   .pop.show{ opacity:1; transform:scale(1); }
 
   /* the cross */
-  #crossGroup .beam{ fill:var(--gold); }
-  #crossGroup.lit .beam{ filter:drop-shadow(0 0 14px rgba(255,232,180,.85)); }
-  .jesus-word{ fill:var(--ink); font-weight:700; letter-spacing:.14em; }
+  #crossGroup .beam{ fill:#fbf7ee; }
+  #crossGroup.lit .beam{ filter:drop-shadow(0 0 16px rgba(255,255,255,.9)) drop-shadow(0 0 32px rgba(255,240,210,.55)); }
+
+  /* the cross descends from heaven, arrowhead leading the way down */
+  #beamV{ opacity:0; }
+  #beamShaft{ transform-box:fill-box; transform-origin:top center; }
+  #beamTip{ transform-box:fill-box; transform-origin:center; }
+  #beamV.descend{ animation:beam-appear .02s linear forwards; }
+  #beamV.descend #beamShaft{ animation:beam-grow 1.25s cubic-bezier(.55,.06,.68,1) both; }
+  #beamV.descend #beamTip{ animation:beam-tip 1.25s cubic-bezier(.55,.06,.68,1) both; }
+  @keyframes beam-appear{ to{ opacity:1 } }
+  @keyframes beam-grow{
+    0%{ transform:scaleY(0); }
+    100%{ transform:scaleY(1); }
+  }
+  @keyframes beam-tip{
+    0%{ transform:translateY(-390px) scale(1.25); opacity:0; }
+    8%{ opacity:1; }
+    100%{ transform:translateY(0) scale(1); opacity:1; }   /* arrowhead stays, driven deep below */
+  }
+  /* fully-descended resting state (when jumping straight past step 7) */
+  #beamV.grown{ opacity:1; }
+  #beamV.grown #beamShaft{ transform:scaleY(1); }
+  #beamV.grown #beamTip{ opacity:1; }
+  /* step 8 ascension: the down-arrow vanishes; an up-arrow rises to heaven */
+  #beamTipUp{ transform-box:fill-box; transform-origin:center; }
+  #beamV.ascend #beamTip{ opacity:0; }
+  #beamV.ascend #beamTipUp{ animation:tip-ascend 2.4s cubic-bezier(.4,0,.5,1) .5s forwards; }
+  @keyframes tip-ascend{
+    0%{ transform:translateY(0) scale(1); opacity:0 }
+    12%{ transform:translateY(0) scale(1.15); opacity:1 }
+    100%{ transform:translateY(-90px) scale(1); opacity:0 }   /* points up, rises into heaven */
+  }
+
+  /* step 8: swarm of small arrows ascending to heaven */
+  #ascendSwarm{ opacity:0; }
+  #ascendSwarm .rise-arrow{ fill:#fbf7ee; opacity:0;
+    filter:drop-shadow(0 0 5px rgba(255,255,255,.9)) drop-shadow(0 0 12px rgba(255,240,210,.6)); }
+  #ascendSwarm.rising{ opacity:1; }
+  #ascendSwarm.rising .rise-arrow{
+    transform-box:fill-box; transform-origin:center;
+    animation:rise-up var(--t,2.4s) cubic-bezier(.35,0,.5,1) var(--d,0s) infinite;
+  }
+  @keyframes rise-up{
+    0%{ transform:translate(0,0) scale(.7); opacity:0 }
+    14%{ opacity:1 }
+    70%{ opacity:.9 }
+    100%{ transform:translate(var(--ax,0), -300px) scale(1.05); opacity:0 }
+  }
+
+  .jesus-word{ fill:var(--ink); font-weight:700; letter-spacing:.14em;
+    transform-box:fill-box; transform-origin:center; }
+  /* step 8: JESUS rises to heaven and shines with divine radiance, like God */
+  #jesusWord.risen{ animation:jesus-ascend 2.6s cubic-bezier(.38,0,.3,1) .5s forwards; }
+  @keyframes jesus-ascend{
+    0%{ transform:translate(0,0) scale(1); fill:var(--ink);
+        filter:drop-shadow(0 0 0 rgba(255,232,180,0)); }
+    30%{ fill:var(--gold-bright); }
+    100%{ transform:translate(0,-222px) scale(1.5); fill:var(--gold-bright);
+        filter:drop-shadow(0 0 8px rgba(255,232,180,.95)) drop-shadow(0 0 22px rgba(241,200,120,.7)); }
+  }
+  /* once risen, JESUS keeps a divine breathing glow like GOD */
+  #jesusWord.glorified{ fill:var(--gold-bright);
+    filter:drop-shadow(0 0 8px rgba(255,232,180,.9)) drop-shadow(0 0 22px rgba(241,200,120,.65));
+    transform:translate(0,-222px) scale(1.5);
+    animation:divine-breath 4.5s ease-in-out infinite; }
 
   /* salvation path */
   #savePath{ stroke:var(--gold-bright); stroke-width:5; fill:none; stroke-linecap:round;
              filter:drop-shadow(0 0 9px rgba(255,232,180,.9)); }
-  #savePath.flow{ animation:dashflow 1.3s linear infinite; }
-  @keyframes dashflow{ to{ stroke-dashoffset:-28; } }
+  #savePath.flow{ animation:dashflow 1.1s linear infinite; }
+  @keyframes dashflow{ from{ stroke-dashoffset:0; } to{ stroke-dashoffset:-22; } }
 
   .strike{ stroke:var(--crimson); stroke-width:3.4; stroke-linecap:round;
            filter:drop-shadow(0 0 4px rgba(199,80,70,.6)); }
@@ -168,27 +254,33 @@
                transform-box:fill-box; transform-origin:center;
                filter:drop-shadow(0 2px 6px rgba(0,0,0,.95)); }
   #crack.cracking .crack-fill{ animation:crack-open .8s cubic-bezier(.85,0,.25,1) both; }
+  /* the cross's glory heals the wound: it closes vertically to nothing */
+  #crack{ transform-box:fill-box; transform-origin:center; }
+  #crack.healed{ animation:crack-heal 1.6s cubic-bezier(.45,0,.25,1) forwards; }
+  @keyframes crack-heal{
+    0%{ transform:scaleY(1); opacity:1 }
+    100%{ transform:scaleY(0); opacity:0 }
+  }
   @keyframes crack-open{
     0%{ transform:scaleY(.02); opacity:0 }
     18%{ opacity:1 }
     100%{ transform:scaleY(1); opacity:1 }
   }
-  /* the wound glows red from WITHIN the chasm */
-  .crack-core{ fill:none; stroke:#c81e12; stroke-width:9; stroke-linecap:round; stroke-linejoin:round;
-               filter:blur(4px); animation:wound-pulse 3.8s ease-in-out infinite; }
+  /* the wound glows red, filling the WHOLE chasm (dark walls, bright molten centre) */
+  .crack-core{ animation:wound-pulse 3.8s ease-in-out infinite; }
   @keyframes wound-pulse{
-    0%,100%{ stroke:#8e1610; stroke-width:6; opacity:.6; }
-    50%{ stroke:#e02818; stroke-width:11; opacity:.95; }
+    0%,100%{ opacity:.62; }
+    50%{ opacity:1; }
   }
-  /* blood seeping down from the crack */
+  /* blood seeping down from the crack — long thin runnels */
   .drip{ fill:#9e1b14; transform-box:fill-box; transform-origin:center top;
-         filter:drop-shadow(0 0 3px rgba(158,27,20,.55));
-         animation:bleed-drip 4.4s ease-in infinite; }
+         filter:drop-shadow(0 0 2px rgba(158,27,20,.5));
+         animation:bleed-drip 4.8s ease-in infinite; }
   @keyframes bleed-drip{
-    0%{ transform:translateY(-2px) scaleY(.45); opacity:0 }
-    12%{ opacity:.82 }
-    60%{ opacity:.5 }
-    100%{ transform:translateY(54px) scaleY(1.6); opacity:0 }
+    0%{ transform:translateY(-4px) scaleY(.3); opacity:0 }
+    14%{ opacity:.8 }
+    65%{ opacity:.5 }
+    100%{ transform:translateY(96px) scaleY(2.1); opacity:0 }
   }
   #diagram.quaking{ animation:quake .62s ease-in-out; }
   @keyframes quake{
@@ -204,15 +296,54 @@
   .label-life{ fill:var(--gold-bright);
     filter:drop-shadow(0 0 6px rgba(255,232,180,.85)) drop-shadow(0 0 18px rgba(241,200,120,.55)); }
   .label-life.show{ animation:divine-breath 4.5s ease-in-out infinite; }
-  .label-sin{ fill:var(--crimson); font-weight:700; letter-spacing:.18em; }
+  .label-sin{ fill:#ff6a55; font-weight:700; letter-spacing:.2em;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,.9)) drop-shadow(0 0 5px rgba(0,0,0,.7)); }
 
   /* SIN rises out of MAN — emerging from within and staining crimson */
-  #sinTxt{ transform-box:fill-box; transform-origin:left bottom; }
-  #sinTxt.emerging{ animation:sin-emerge 1.15s cubic-bezier(.32,.66,.28,1) both; }
+  #sinInner{ transform-box:fill-box; transform-origin:center; }
+  #sinInner.emerging{ animation:sin-emerge 1.15s cubic-bezier(.32,.66,.28,1) both; }
   @keyframes sin-emerge{
-    0%{ transform:translateY(128px) scale(.45); opacity:0; fill:var(--cream); }
-    20%{ opacity:.85; fill:var(--death); }
-    100%{ transform:translateY(0) scale(1); opacity:1; fill:var(--crimson); }
+    0%{ transform:translateY(128px) scale(.45); opacity:0; }
+    100%{ transform:translateY(0) scale(1); opacity:1; }
+  }
+  /* the three letters of SIN */
+  .sin-piece{ transform-box:fill-box; transform-origin:center; }
+  /* when the cross strikes: SIN breaks into separated, cracked pieces — still readable */
+  #sinWrap.broken .sin-piece{ filter:url(#shatter) drop-shadow(0 2px 3px rgba(0,0,0,.95)); }
+  #sinWrap.broken #sinS{ animation:break-S .6s cubic-bezier(.3,.8,.4,1) both; }
+  #sinWrap.broken #sinI{ animation:break-I .6s cubic-bezier(.3,.8,.4,1) both; }
+  #sinWrap.broken #sinN{ animation:break-N .6s cubic-bezier(.3,.8,.4,1) both; }
+  @keyframes break-S{
+    0%{ transform:translate(0,0) rotate(0) }
+    35%{ transform:translate(-30px,30px) rotate(-24deg) }
+    100%{ transform:translate(-25px,26px) rotate(-20deg) }
+  }
+  @keyframes break-I{
+    0%{ transform:translate(0,0) rotate(0) }
+    35%{ transform:translate(-3px,38px) rotate(9deg) }
+    100%{ transform:translate(-2px,33px) rotate(6deg) }
+  }
+  @keyframes break-N{
+    0%{ transform:translate(0,0) rotate(0) }
+    35%{ transform:translate(29px,28px) rotate(23deg) }
+    100%{ transform:translate(24px,24px) rotate(19deg) }
+  }
+  /* step 8: the cross's power casts the broken sin down into the depths (hell below) */
+  #sinWrap.cast-down .sin-piece{ filter:url(#shatter) drop-shadow(0 2px 3px rgba(0,0,0,.95)); }
+  #sinWrap.cast-down #sinS{ animation:cast-S 1.9s cubic-bezier(.45,0,.7,.35) .12s forwards; }
+  #sinWrap.cast-down #sinI{ animation:cast-I 1.9s cubic-bezier(.45,0,.7,.35) .18s forwards; }
+  #sinWrap.cast-down #sinN{ animation:cast-N 1.9s cubic-bezier(.45,0,.7,.35) .06s forwards; }
+  @keyframes cast-S{
+    0%{ transform:translate(-25px,26px) rotate(-20deg); opacity:1 }
+    100%{ transform:translate(-70px,360px) rotate(-220deg); opacity:0 }
+  }
+  @keyframes cast-I{
+    0%{ transform:translate(-2px,33px) rotate(6deg); opacity:1 }
+    100%{ transform:translate(8px,380px) rotate(180deg); opacity:0 }
+  }
+  @keyframes cast-N{
+    0%{ transform:translate(24px,24px) rotate(19deg); opacity:1 }
+    100%{ transform:translate(78px,360px) rotate(240deg); opacity:0 }
   }
 
   /* GOD — a divine, gently breathing radiance */
@@ -223,8 +354,52 @@
     0%,100%{ filter:drop-shadow(0 0 6px rgba(255,232,180,.8)) drop-shadow(0 0 16px rgba(241,200,120,.45)); }
     50%{ filter:drop-shadow(0 0 11px rgba(255,240,205,1)) drop-shadow(0 0 30px rgba(241,200,120,.8)); }
   }
+  /* MAN — alive, but fallen: a faint, dim breath, far less than God's radiance */
+  .man-glow{ animation:man-breath 6.5s ease-in-out infinite; }
+  @keyframes man-breath{
+    0%,100%{ filter:drop-shadow(0 0 2px rgba(243,236,220,.18)); }
+    50%{ filter:drop-shadow(0 0 6px rgba(243,236,220,.4)); }
+  }
   .fail-line{ stroke:var(--muted); stroke-width:2; stroke-dasharray:2 5; }
-  .fail-label{ fill:var(--muted); font-size:13px; font-weight:500; letter-spacing:.05em; }
+  .fail-label{ fill:var(--muted); font-size:12px; font-weight:500; letter-spacing:.04em; }
+  /* man's efforts strive upward from the road but fall short of the chasm */
+  #failGroup .fail-line{ transform-box:fill-box; transform-origin:bottom; }
+  #failGroup .fail-label, #failGroup .fail-arrow{ transform-box:fill-box; }
+  #failGroup.striving .fail-line{ animation:strive-up .9s cubic-bezier(.34,.72,.4,1) both; }
+  #failGroup.striving .fail-arrow{ animation:arrow-rise .9s cubic-bezier(.34,.72,.4,1) both; }
+  #failGroup.striving .fail-label{ animation:label-rise .55s ease both; }
+  /* stagger: church, then good works, then other ways */
+  #failGroup.striving .fail-line:nth-of-type(1),
+  #failGroup.striving .fail-arrow:nth-of-type(1){ animation-delay:0s; }
+  #failGroup.striving .fail-line:nth-of-type(2),
+  #failGroup.striving .fail-arrow:nth-of-type(2){ animation-delay:.22s; }
+  #failGroup.striving .fail-line:nth-of-type(3),
+  #failGroup.striving .fail-arrow:nth-of-type(3){ animation-delay:.44s; }
+  #failGroup.striving .fail-label:nth-of-type(1){ animation-delay:.55s; }
+  #failGroup.striving .fail-label:nth-of-type(2){ animation-delay:.77s; }
+  #failGroup.striving .fail-label:nth-of-type(3){ animation-delay:.99s; }
+  @keyframes strive-up{ 0%{ transform:scaleY(0); } 100%{ transform:scaleY(1); } }
+  @keyframes arrow-rise{ 0%{ opacity:0; } 70%{ opacity:0; } 100%{ opacity:1; } }
+  @keyframes label-rise{ 0%{ opacity:0; transform:translateY(8px); } 100%{ opacity:1; transform:translateY(0); } }
+
+  /* step 8: only the cross saves — man's efforts crumble and are swept away */
+  #failGroup .fail-line, #failGroup .fail-arrow, #failGroup .fail-label{ transform-box:fill-box; }
+  #failGroup.swept-away .fail-line{ transform-origin:bottom; animation:fail-crumble 1.1s cubic-bezier(.5,0,.75,.4) forwards; }
+  #failGroup.swept-away .fail-arrow{ animation:fail-fall 1.1s cubic-bezier(.5,0,.75,.4) forwards; }
+  #failGroup.swept-away .fail-label{ animation:fail-fall 1.1s cubic-bezier(.5,0,.75,.4) forwards; }
+  @keyframes fail-crumble{ 0%{ transform:scaleY(1); opacity:.9 } 100%{ transform:scaleY(0); opacity:0 } }
+  @keyframes fail-fall{ 0%{ transform:translate(0,0) rotate(0); opacity:.9 }
+    100%{ transform:translate(0,46px) rotate(-12deg); opacity:0 } }
+  /* collapse in sequence: church, good works, other ways */
+  #failGroup.swept-away .fail-line:nth-of-type(1),
+  #failGroup.swept-away .fail-arrow:nth-of-type(1),
+  #failGroup.swept-away .fail-label:nth-of-type(1){ animation-delay:0s; }
+  #failGroup.swept-away .fail-line:nth-of-type(2),
+  #failGroup.swept-away .fail-arrow:nth-of-type(2),
+  #failGroup.swept-away .fail-label:nth-of-type(2){ animation-delay:.13s; }
+  #failGroup.swept-away .fail-line:nth-of-type(3),
+  #failGroup.swept-away .fail-arrow:nth-of-type(3),
+  #failGroup.swept-away .fail-label:nth-of-type(3){ animation-delay:.26s; }
 
   .nameTxt{ fill:var(--gold-bright); font-family:"Cormorant Garamond",serif; font-style:italic;
             font-weight:600; filter:drop-shadow(0 0 6px rgba(255,232,180,.5)); }
@@ -370,6 +545,7 @@
   <div class="layer deepfield"></div>
   <div class="layer heaven" id="heaven"></div>
   <div id="climaxGlow"></div>
+  <div id="gloryBurst"></div>
   <div id="motes"></div>
 </div>
 <div id="vignette"></div>
@@ -385,29 +561,42 @@
       <marker id="arrowGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
         <path d="M0,0 L10,5 L0,10 z" fill="#ffe8b4"/>
       </marker>
+      <linearGradient id="woundGrad" gradientUnits="userSpaceOnUse" x1="0" y1="208" x2="0" y2="275">
+        <stop offset="0" stop-color="#2a0604"/>
+        <stop offset="0.32" stop-color="#9e1b12"/>
+        <stop offset="0.5" stop-color="#f23522"/>
+        <stop offset="0.68" stop-color="#9e1b12"/>
+        <stop offset="1" stop-color="#2a0604"/>
+      </linearGradient>
+      <filter id="shatter" x="-40%" y="-40%" width="180%" height="180%">
+        <feTurbulence type="turbulence" baseFrequency="0.05 0.14" numOctaves="2" seed="7" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="11" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
       <clipPath id="crackClip">
-        <path d="M -520 206.0 L -464 211.4 L -414 207.9 L -356 216.3 L -290 204.3 L -243 215.2 L -195 214.4 L -123 217.9 L -60 220.1 L -11 215.9 L 46 208.0 L 110 217.5 L 157 197.8 L 219 205.6 L 271 212.0 L 318 220.4 L 366 209.6 L 425 197.6 L 484 211.3 L 532 216.3 L 585 210.8 L 633 198.5 L 696 216.1 L 755 208.5 L 802 228.8 L 874 222.3 L 938 197.3 L 987 217.2 L 1040 211.3 L 1106 210.5 L 1172 203.5 L 1236 213.8 L 1283 212.9 L 1347 221.9 L 1411 221.2 L 1469 216.6 L 1516 204.8 L 1520 206.8 L 1520 236.8 L 1516 224.8 L 1469 226.6 L 1411 237.2 L 1347 237.9 L 1283 234.9 L 1236 227.8 L 1172 223.5 L 1106 254.5 L 1040 227.3 L 987 237.2 L 938 231.3 L 874 234.3 L 802 238.8 L 755 220.5 L 696 236.1 L 633 242.5 L 585 248.8 L 532 228.3 L 484 221.3 L 425 235.6 L 366 221.6 L 318 232.4 L 271 246.0 L 219 243.6 L 157 231.8 L 110 243.5 L 46 234.0 L -11 235.9 L -60 240.1 L -123 229.9 L -195 236.4 L -243 227.2 L -290 226.3 L -356 234.3 L -414 241.9 L -464 227.4 L -520 222.0 Z"/>
+        <path d="M -520 213.1 L -464 219.0 L -414 229.0 L -356 222.4 L -290 208.5 L -243 225.9 L -195 219.5 L -123 219.9 L -60 238.7 L -11 234.1 L 46 210.7 L 110 221.1 L 157 218.0 L 219 231.6 L 271 233.5 L 318 231.6 L 366 210.8 L 425 223.0 L 484 207.6 L 532 227.1 L 585 237.3 L 633 220.2 L 696 234.3 L 755 218.7 L 802 226.7 L 874 233.7 L 938 217.5 L 987 235.5 L 1040 223.8 L 1106 233.3 L 1172 220.5 L 1236 223.5 L 1283 217.8 L 1347 230.4 L 1411 234.7 L 1469 213.4 L 1516 221.9 L 1520 207.6 L 1520 267.6 L 1516 237.9 L 1469 261.4 L 1411 256.7 L 1347 262.4 L 1283 261.8 L 1236 249.5 L 1172 236.5 L 1106 265.3 L 1040 245.8 L 987 251.5 L 938 241.5 L 874 255.7 L 802 274.7 L 755 240.7 L 696 250.3 L 633 252.2 L 585 255.3 L 532 249.1 L 484 255.6 L 425 241.0 L 366 250.8 L 318 253.6 L 271 257.5 L 219 249.6 L 157 242.0 L 110 273.1 L 46 262.7 L -11 250.1 L -60 254.7 L -123 259.9 L -195 263.5 L -243 247.9 L -290 252.5 L -356 260.4 L -414 253.0 L -464 251.0 L -520 245.1 Z"/>
       </clipPath>
     </defs>
 
     <!-- TOP ROAD : the path of LIFE (with God) -->
-    <line class="road draw lifeglow" data-step="2" id="topRoad" x1="262" y1="120" x2="800" y2="120" marker-end="url(#arrowGold)" style="stroke:#ffe8b4"/>
+    <line class="road draw lifeglow" data-step="2" id="topRoad" x1="210" y1="120" x2="800" y2="120" marker-end="url(#arrowGold)" style="stroke:#ffe8b4"/>
     <!-- BOTTOM ROAD : the path of DEATH -->
     <line class="road draw" data-step="5" id="botRoad" x1="210" y1="372" x2="800" y2="372" marker-end="url(#arrow)"/>
 
-    <!-- TOP-LEFT NODE: GOD / MAN -->
-    <text class="dlabel fade god-glow" data-step="1" x="80" y="128" font-size="30" id="godTxt">GOD</text>
-    <text class="dlabel fade" data-step="2" x="150" y="128" font-size="30" id="manTopTxt">/ MAN</text>
-    <line class="strike" id="manStrike" x1="150" y1="119" x2="242" y2="113"></line>
+    <!-- TOP-LEFT NODE: GOD / MAN  (centred until step 6, then slides left) -->
+    <g id="originTop" class="mover">
+      <text class="dlabel fade god-glow" data-step="1" x="80" y="128" font-size="30" id="godTxt">GOD</text>
+      <text class="dlabel fade" data-step="2" x="168" y="128" font-size="30" id="manTopTxt">/ MAN</text>
+      <line class="strike" id="manStrike" x1="168" y1="119" x2="260" y2="113"></line>
+    </g>
 
     <!-- RIGHT NODES -->
     <text class="dlabel label-life fade" data-step="2" x="828" y="128" font-size="30">LIFE</text>
     <text class="dlabel label-death fade" data-step="5" x="828" y="380" font-size="30">DEATH</text>
 
-    <!-- BOTTOM-LEFT NODE: MAN (cast down from the heights) -->
-    <g class="fade" data-step="3" id="fallMan">
+    <!-- BOTTOM-LEFT NODE: MAN (cast down; centred until step 6, then slides left) -->
+    <g class="fade mover" data-step="3" id="fallMan">
       <g class="fall-outer">
-        <text class="dlabel fall-inner" x="80" y="380" font-size="30" text-anchor="start" id="manBotTxt">MAN</text>
+        <text class="dlabel fall-inner man-glow" x="80" y="380" font-size="30" text-anchor="start" id="manBotTxt">MAN</text>
       </g>
     </g>
     <!-- names replace MAN at John 3:16 -->
@@ -416,48 +605,77 @@
 
     <!-- The fault of sin: an irregular chasm splitting the page in half -->
     <g class="fade" data-step="5" id="crack">
-      <path class="crack-fill" d="M -520 206.0 L -464 211.4 L -414 207.9 L -356 216.3 L -290 204.3 L -243 215.2 L -195 214.4 L -123 217.9 L -60 220.1 L -11 215.9 L 46 208.0 L 110 217.5 L 157 197.8 L 219 205.6 L 271 212.0 L 318 220.4 L 366 209.6 L 425 197.6 L 484 211.3 L 532 216.3 L 585 210.8 L 633 198.5 L 696 216.1 L 755 208.5 L 802 228.8 L 874 222.3 L 938 197.3 L 987 217.2 L 1040 211.3 L 1106 210.5 L 1172 203.5 L 1236 213.8 L 1283 212.9 L 1347 221.9 L 1411 221.2 L 1469 216.6 L 1516 204.8 L 1520 206.8 L 1520 236.8 L 1516 224.8 L 1469 226.6 L 1411 237.2 L 1347 237.9 L 1283 234.9 L 1236 227.8 L 1172 223.5 L 1106 254.5 L 1040 227.3 L 987 237.2 L 938 231.3 L 874 234.3 L 802 238.8 L 755 220.5 L 696 236.1 L 633 242.5 L 585 248.8 L 532 228.3 L 484 221.3 L 425 235.6 L 366 221.6 L 318 232.4 L 271 246.0 L 219 243.6 L 157 231.8 L 110 243.5 L 46 234.0 L -11 235.9 L -60 240.1 L -123 229.9 L -195 236.4 L -243 227.2 L -290 226.3 L -356 234.3 L -414 241.9 L -464 227.4 L -520 222.0 Z"/>
+      <path class="crack-fill" d="M -520 213.1 L -464 219.0 L -414 229.0 L -356 222.4 L -290 208.5 L -243 225.9 L -195 219.5 L -123 219.9 L -60 238.7 L -11 234.1 L 46 210.7 L 110 221.1 L 157 218.0 L 219 231.6 L 271 233.5 L 318 231.6 L 366 210.8 L 425 223.0 L 484 207.6 L 532 227.1 L 585 237.3 L 633 220.2 L 696 234.3 L 755 218.7 L 802 226.7 L 874 233.7 L 938 217.5 L 987 235.5 L 1040 223.8 L 1106 233.3 L 1172 220.5 L 1236 223.5 L 1283 217.8 L 1347 230.4 L 1411 234.7 L 1469 213.4 L 1516 221.9 L 1520 207.6 L 1520 267.6 L 1516 237.9 L 1469 261.4 L 1411 256.7 L 1347 262.4 L 1283 261.8 L 1236 249.5 L 1172 236.5 L 1106 265.3 L 1040 245.8 L 987 251.5 L 938 241.5 L 874 255.7 L 802 274.7 L 755 240.7 L 696 250.3 L 633 252.2 L 585 255.3 L 532 249.1 L 484 255.6 L 425 241.0 L 366 250.8 L 318 253.6 L 271 257.5 L 219 249.6 L 157 242.0 L 110 273.1 L 46 262.7 L -11 250.1 L -60 254.7 L -123 259.9 L -195 263.5 L -243 247.9 L -290 252.5 L -356 260.4 L -414 253.0 L -464 251.0 L -520 245.1 Z"/>
       <g clip-path="url(#crackClip)">
-        <path class="crack-core" d="M -520 214.0 L -464 219.4 L -414 224.9 L -356 225.3 L -290 215.3 L -243 221.2 L -195 225.4 L -123 223.9 L -60 230.1 L -11 225.9 L 46 221.0 L 110 230.5 L 157 214.8 L 219 224.6 L 271 229.0 L 318 226.4 L 366 215.6 L 425 216.6 L 484 216.3 L 532 222.3 L 585 229.8 L 633 220.5 L 696 226.1 L 755 214.5 L 802 233.8 L 874 228.3 L 938 214.3 L 987 227.2 L 1040 219.3 L 1106 232.5 L 1172 213.5 L 1236 220.8 L 1283 223.9 L 1347 229.9 L 1411 229.2 L 1469 221.6 L 1516 214.8 L 1520 221.8"/>
+        <rect class="crack-core" x="-520" y="202" width="2040" height="80" fill="url(#woundGrad)"/>
       </g>
       <g id="bleed" aria-hidden="true">
-        <ellipse class="drip" cx="118" cy="236" rx="3" ry="6.5" style="animation-delay:-.4s;  animation-duration:4.6s"/>
-        <ellipse class="drip" cx="232" cy="242" rx="2.6" ry="6" style="animation-delay:-2.7s; animation-duration:5.1s"/>
-        <ellipse class="drip" cx="352" cy="232" rx="3.2" ry="7" style="animation-delay:-1.5s; animation-duration:4.2s"/>
-        <ellipse class="drip" cx="470" cy="239" rx="2.4" ry="5.5" style="animation-delay:-3.4s; animation-duration:5.4s"/>
-        <ellipse class="drip" cx="588" cy="245" rx="3" ry="6.5" style="animation-delay:-.9s;  animation-duration:4.8s"/>
-        <ellipse class="drip" cx="700" cy="234" rx="2.7" ry="6" style="animation-delay:-2.1s; animation-duration:4.4s"/>
-        <ellipse class="drip" cx="820" cy="238" rx="3.1" ry="6.8" style="animation-delay:-3.8s; animation-duration:5.2s"/>
-        <ellipse class="drip" cx="932" cy="242" rx="2.5" ry="5.8" style="animation-delay:-1.2s; animation-duration:4.9s"/>
+        <ellipse class="drip" cx="118" cy="254" rx="1.3" ry="12" style="animation-delay:-.4s;  animation-duration:4.9s"/>
+        <ellipse class="drip" cx="232" cy="260" rx="1.1" ry="11" style="animation-delay:-2.7s; animation-duration:5.5s"/>
+        <ellipse class="drip" cx="352" cy="250" rx="1.5" ry="14" style="animation-delay:-1.5s; animation-duration:4.5s"/>
+        <ellipse class="drip" cx="470" cy="257" rx="1.1" ry="10" style="animation-delay:-3.4s; animation-duration:5.8s"/>
+        <ellipse class="drip" cx="588" cy="263" rx="1.4" ry="13" style="animation-delay:-.9s;  animation-duration:5.1s"/>
+        <ellipse class="drip" cx="700" cy="252" rx="1.2" ry="11.5" style="animation-delay:-2.1s; animation-duration:4.6s"/>
+        <ellipse class="drip" cx="820" cy="256" rx="1.5" ry="13.5" style="animation-delay:-3.8s; animation-duration:5.6s"/>
+        <ellipse class="drip" cx="932" cy="260" rx="1.1" ry="10.5" style="animation-delay:-1.2s; animation-duration:5.2s"/>
       </g>
     </g>
 
-    <!-- SIN in the gap -->
-    <text class="dlabel label-sin fade" data-step="4" x="80" y="252" font-size="34" text-anchor="start" id="sinTxt">SIN</text>
-
-    <!-- MAN'S FAILED ATTEMPTS -->
+    <!-- MAN'S FAILED ATTEMPTS — striving upward but falling short (in the opened space) -->
     <g data-step="6" class="fade" id="failGroup">
-      <line class="fail-line" x1="300" y1="372" x2="300" y2="262"/>
-      <text class="fail-label" x="300" y="250" text-anchor="middle">CHURCH</text>
-      <line class="fail-line" x1="390" y1="372" x2="390" y2="278"/>
-      <text class="fail-label" x="390" y="266" text-anchor="middle">GOOD WORKS</text>
-      <line class="fail-line" x1="480" y1="372" x2="480" y2="270"/>
-      <text class="fail-label" x="480" y="258" text-anchor="middle">OTHER WAYS</text>
+      <line class="fail-line" x1="210" y1="372" x2="210" y2="262"/>
+      <path class="fail-arrow" d="M 204 270 L 210 258 L 216 270 Z" fill="var(--muted)"/>
+      <text class="fail-label" x="210" y="248" text-anchor="middle">CHURCH</text>
+      <line class="fail-line" x1="300" y1="372" x2="300" y2="278"/>
+      <path class="fail-arrow" d="M 294 286 L 300 274 L 306 286 Z" fill="var(--muted)"/>
+      <text class="fail-label" x="300" y="264" text-anchor="middle">GOOD WORKS</text>
+      <line class="fail-line" x1="390" y1="372" x2="390" y2="270"/>
+      <path class="fail-arrow" d="M 384 278 L 390 266 L 396 278 Z" fill="var(--muted)"/>
+      <text class="fail-label" x="390" y="256" text-anchor="middle">OTHER WAYS</text>
     </g>
 
-    <!-- THE CROSS — the only bridge -->
+    <!-- THE CROSS — descends at the centre, onto sin -->
     <g id="crossGroup">
-      <!-- vertical beam reaches down from heaven (step7) to the road of death -->
-      <rect class="beam pop" data-step="7" id="beamV" x="606" y="64" width="20" height="312" rx="9"/>
-      <!-- crossbar completes at the sacrifice (step8) -->
-      <rect class="beam pop" data-step="8" id="beamH" x="544" y="172" width="144" height="20" rx="9"/>
-      <text class="jesus-word fade" data-step="8" x="616" y="232" font-size="17" text-anchor="middle"
-            font-family="Outfit" transform="rotate(90 616 226)">JESUS</text>
+      <!-- vertical beam descends from heaven (step7) to the road of death, arrowhead leading -->
+      <g data-step="7" id="beamV">
+        <rect class="beam" id="beamShaft" x="471" y="50" width="34" height="392"/>
+        <path class="beam" id="beamTip" d="M 454 424 L 522 424 L 488 478 Z"/>
+        <!-- upward arrowhead for the ascension at step 8 -->
+        <path class="beam" id="beamTipUp" d="M 454 76 L 522 76 L 488 22 Z" opacity="0"/>
+      </g>
+      <!-- crossbar sits on the line of sin (the crack), completing at the sacrifice (step8) -->
+      <rect class="beam pop" data-step="8" id="beamH" x="398" y="224" width="180" height="32"/>
+      <text class="jesus-word fade" id="jesusWord" data-step="8" x="488" y="247" font-size="20" text-anchor="middle"
+            font-family="Outfit">JESUS</text>
+    </g>
+
+    <!-- step 8: a swarm of small arrows ascending to heaven, like sparks of the cross's power -->
+    <g id="ascendSwarm" aria-hidden="true">
+      <path class="rise-arrow" d="M 426 392 L 442 392 L 434 372 Z" style="--ax:-62px; --d:.05s; --t:2.0s"/>
+      <path class="rise-arrow" d="M 470 404 L 486 404 L 478 384 Z" style="--ax:-30px; --d:.34s; --t:2.4s"/>
+      <path class="rise-arrow" d="M 506 398 L 522 398 L 514 378 Z" style="--ax:24px;  --d:.16s; --t:2.2s"/>
+      <path class="rise-arrow" d="M 548 406 L 564 406 L 556 386 Z" style="--ax:58px;  --d:.46s; --t:2.6s"/>
+      <path class="rise-arrow" d="M 444 360 L 458 360 L 451 343 Z" style="--ax:-48px; --d:.62s; --t:2.3s"/>
+      <path class="rise-arrow" d="M 520 366 L 534 366 L 527 349 Z" style="--ax:40px;  --d:.28s; --t:2.5s"/>
+      <path class="rise-arrow" d="M 484 350 L 500 350 L 492 330 Z" style="--ax:6px;   --d:.74s; --t:2.7s"/>
+      <path class="rise-arrow" d="M 402 372 L 414 372 L 408 357 Z" style="--ax:-78px; --d:.40s; --t:2.4s"/>
+      <path class="rise-arrow" d="M 566 380 L 578 380 L 572 365 Z" style="--ax:76px;  --d:.58s; --t:2.5s"/>
+      <path class="rise-arrow" d="M 458 332 L 470 332 L 464 318 Z" style="--ax:-20px; --d:.88s; --t:2.6s"/>
+      <path class="rise-arrow" d="M 510 330 L 522 330 L 516 316 Z" style="--ax:30px;  --d:.96s; --t:2.7s"/>
     </g>
 
     <!-- SALVATION PATH: from the fallen road, up the cross, across to LIFE -->
     <path id="savePath" class="fade" data-step="10"
-          d="M 210 372 L 616 372 L 616 120 L 800 120" marker-end="url(#arrowGold)"></path>
+          d="M 210 372 L 488 372 L 488 120 L 800 120" marker-end="url(#arrowGold)"></path>
+
+    <!-- SIN in the gap — three pieces that break apart when the cross strikes -->
+    <g id="sinWrap">
+      <g id="sinInner">
+        <text class="sin-piece label-sin fade" data-step="4" x="80" y="254" font-size="42" text-anchor="start" id="sinS">S</text>
+        <text class="sin-piece label-sin fade" data-step="4" x="116.4" y="254" font-size="42" text-anchor="start" id="sinI">I</text>
+        <text class="sin-piece label-sin fade" data-step="4" x="136.5" y="254" font-size="42" text-anchor="start" id="sinN">N</text>
+      </g>
+    </g>
   </svg>
 </section>
 
@@ -569,6 +787,7 @@
     ovInner:document.getElementById('ovInner'),
     heaven:document.getElementById('heaven'),
     climax:document.getElementById('climaxGlow'),
+    glory:document.getElementById('gloryBurst'),
     ghost:document.getElementById('ghostCross'),
     crossGroup:document.getElementById('crossGroup'),
     savePath:document.getElementById('savePath'),
@@ -594,8 +813,43 @@
   let cur = 0;
   let maxDiagram = 0;
 
+  /* smoothly tween a line's left endpoint (x1) so roads follow GOD/MAN */
+  const roadEls = { top:document.getElementById('topRoad'), bot:document.getElementById('botRoad') };
+  const roadTween = { top:null, bot:null };
+  function tweenRoadX1(line, key, to, dur){
+    const from = parseFloat(line.getAttribute('x1'));
+    if(!dur || Math.abs(from-to) < 0.5){ line.setAttribute('x1', to); return; }
+    if(roadTween[key]) cancelAnimationFrame(roadTween[key]);
+    const t0 = performance.now();
+    (function step(now){
+      let k = Math.min(1,(now-t0)/dur);
+      const e = k<.5 ? 2*k*k : 1-Math.pow(-2*k+2,2)/2;  // easeInOut
+      line.setAttribute('x1', (from+(to-from)*e).toFixed(1));
+      if(k<1) roadTween[key]=requestAnimationFrame(step);
+    })(performance.now());
+  }
+  // phase-1 (centred) vs phase-2 (opened up) road start points
+  const ROAD = { top:{ centred:620, open:210 }, bot:{ centred:620, open:210 } };
+  let initLayout = true;
+  let roadExtending = false;          // true while the roads are sliding open
+  let failTimer = null;               // delays the failed-attempts reveal
+  let sinBreakTimer = null;           // delays SIN breaking until the arrow strikes
+  let jesusTimer = null;              // delays JESUS glorification until after the ascent
+  function setLayout(level){
+    const phase2 = level>=6;
+    const wasOpen = el.diagram.classList.contains('phase2');
+    el.diagram.classList.toggle('phase2', phase2);
+    const dur = initLayout ? 0 : 800;
+    roadExtending = phase2 && !wasOpen && !initLayout;   // just opened up now
+    tweenRoadX1(roadEls.top, 'top', phase2?ROAD.top.open:ROAD.top.centred, dur);
+    tweenRoadX1(roadEls.bot, 'bot', phase2?ROAD.bot.open:ROAD.bot.centred, dur);
+    initLayout = false;
+  }
+
   function setDiagram(level){
+    setLayout(level);
     document.querySelectorAll('#diagram [data-step]').forEach(node=>{
+      if(node.id==='failGroup') return;   // handled separately (waits for the road to extend)
       const st = +node.dataset.step;
       if(st <= level){
         node.classList.add('show');
@@ -607,9 +861,103 @@
         }
       }
     });
-    // cross lit + climax glow from step 8 onward
-    if(level>=8){ el.crossGroup.classList.add('lit'); el.climax.classList.add('on'); }
-    else { el.crossGroup.classList.remove('lit'); el.climax.classList.remove('on'); }
+    // cross lit + climax glow from step 8 onward; the cross's glory heals the wound
+    const crackEl2 = document.getElementById('crack');
+    const beamVref = document.getElementById('beamV');
+    if(level>=8){
+      el.crossGroup.classList.add('lit'); el.climax.classList.add('on');
+      if(level===8){
+        // explode the glory burst once on arrival
+        el.glory.classList.remove('boom');
+        void el.glory.getBoundingClientRect();
+        el.glory.classList.add('boom');
+      }
+      if(crackEl2) crackEl2.classList.add('healed');   // the crack closes & disappears
+      // the risen Christ: JESUS and the arrowhead ascend to heaven, then shine like God
+      const jesusEl = document.getElementById('jesusWord');
+      const swarm = document.getElementById('ascendSwarm');
+      clearTimeout(jesusTimer);
+      if(swarm) swarm.classList.add('rising');         // a host of arrows rises to heaven
+      if(level===8){
+        if(beamVref) beamVref.classList.add('ascend');
+        if(jesusEl){
+          jesusEl.classList.remove('risen','glorified');
+          void jesusEl.getBoundingClientRect();
+          jesusEl.classList.add('risen');
+          jesusTimer = setTimeout(()=>{        // after the ascent, hold a divine breathing glow
+            jesusEl.classList.remove('risen');
+            jesusEl.classList.add('glorified');
+          }, 3100);
+        }
+      } else { // level>8 — show already ascended & glorified
+        if(beamVref) beamVref.classList.add('ascend');
+        if(jesusEl){ jesusEl.classList.remove('risen'); jesusEl.classList.add('glorified'); }
+      }
+    } else {
+      el.crossGroup.classList.remove('lit'); el.climax.classList.remove('on');
+      el.glory.classList.remove('boom');
+      if(crackEl2) crackEl2.classList.remove('healed');
+      const jesusEl = document.getElementById('jesusWord');
+      if(jesusEl) jesusEl.classList.remove('risen','glorified');
+      if(beamVref) beamVref.classList.remove('ascend');
+      const swarm = document.getElementById('ascendSwarm');
+      if(swarm) swarm.classList.remove('rising');
+    }
+    // the cross descends from heaven (arrowhead leading) on arriving at step 7
+    const beamV = beamVref;
+    const sinWrap = document.getElementById('sinWrap');
+    clearTimeout(sinBreakTimer);
+    if(sinWrap){
+      if(level===7){
+        sinWrap.classList.remove('broken','cast-down');   // whole, until the arrow strikes
+        void sinWrap.getBoundingClientRect();
+        sinBreakTimer = setTimeout(()=>sinWrap.classList.add('broken'), 720);  // arrow reaches sin
+      } else if(level===8){
+        // the cross's power casts the shattered sin down into the depths
+        sinWrap.classList.add('broken','cast-down');
+      } else if(level>8){
+        sinWrap.classList.add('broken','cast-down');       // stays gone below
+      } else {
+        sinWrap.classList.remove('broken','cast-down');    // before the strike, sin is whole
+      }
+    }
+    if(beamV){
+      if(level===7){
+        beamV.classList.remove('descend','grown');
+        void beamV.getBoundingClientRect();          // force reflow to replay the descent
+        beamV.classList.add('descend');
+      } else if(level>=7){
+        // jumped past step 7 — show the beam fully descended, no replay
+        beamV.classList.remove('descend');
+        beamV.classList.add('grown');
+      } else {
+        beamV.classList.remove('descend','grown');   // hidden before the cross arrives
+      }
+    }
+    // man's efforts: appear ONLY after the road has fully extended left, then rise one by one
+    const failG = document.getElementById('failGroup');
+    if(failG){
+      clearTimeout(failTimer);
+      if(level===6){
+        // hide first, then reveal + strive once the road finishes opening
+        failG.classList.remove('show','striving','swept-away');
+        const wait = roadExtending ? 950 : 200;   // wait for the ~0.8s road slide to settle
+        failTimer = setTimeout(()=>{
+          failG.classList.add('show');
+          void failG.getBoundingClientRect();      // reflow so the stagger replays
+          failG.classList.add('striving');
+        }, wait);
+      } else if(level===7){
+        failG.classList.add('show');               // still standing as the cross descends
+        failG.classList.remove('striving','swept-away');
+      } else if(level>=8){
+        // the cross prevails — man's efforts crumble and are swept away
+        failG.classList.add('show','swept-away');
+        failG.classList.remove('striving');
+      } else {
+        failG.classList.remove('show','striving','swept-away'); // not yet
+      }
+    }
     // salvation path flow at step 10
     if(level>=10){
       const len=el.savePath.getTotalLength();
@@ -640,7 +988,7 @@
       }
     }
     // sin rises out of man on arriving at step 4
-    const sinEl = document.getElementById('sinTxt');
+    const sinEl = document.getElementById('sinInner');
     if(sinEl){
       if(level===4){
         sinEl.classList.remove('emerging');
